@@ -68,9 +68,9 @@ int utn_getString(char *msg, char *msgError, char *pCadena, int limite, int rein
         do {
             printf("%s", msg);
             if (!(myGets(pCadena, limite)) && utn_isAlphabetic(pCadena)) {
-                for(int x = 0; x<limite; x++){
-                    pCadena[x] = tolower(pCadena[x]);
-                }
+//                for(int x = 0; x<limite; x++){
+//                    pCadena[x] = tolower(pCadena[x]);
+//                }
                 output = 0;
             } else {
                 reintentos--;
@@ -209,7 +209,7 @@ int utn_getStringWithNumbersAndSymbols(char *msg, char *msgError, char *pCadena,
             printf("%s", msg);
             if (!(myGets(pCadena, limite))) {
                 for(int x = 0; x<limite; x++){
-                    pCadena[x] = toupper(pCadena[x]);
+                    pCadena[x] = tolower(pCadena[x]);
                 }
                 output = 0;
             } else {

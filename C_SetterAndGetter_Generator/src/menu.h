@@ -4,8 +4,8 @@
 #include<stdlib.h>
 #include"utn.h"
 
-int menu_Principal(int*);
-int menu_Campos(int*);
+int menu_Main(int*);
+int menu_Variables(int*);
 
 
 #endif /* MENU_H_ */

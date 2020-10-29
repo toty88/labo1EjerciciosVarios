@@ -1,12 +1,10 @@
-#include<stdio.h>
-#include<stdlib.h>
 #include"menu.h"
 
-int menu_Principal(int *pResultado)
+int menu_Main(int *pResult)
 {
     int output = -1;
-    int opcion;
-    if (pResultado != NULL)
+    int option;
+    if (pResult != NULL)
     {
         if (!(utn_getInt(
               "\n######################################################\n"
@@ -15,20 +13,20 @@ int menu_Principal(int *pResultado)
                 "(1). INGRESE EL NOMBRE DE LA ESTRUCTURA\n"
                 "(2). INGRESE TIPO Y NOMBRE DE CAMPOS DE LA ESTRUCTURA\n"
                 "(3). IMPRIMIR SETTERS Y GETTERS\n"
-                "(4). SALIR -------------> ","EROR, OPCION INVALIDA. REINTENTOS", &opcion, 3)))
+                "(4). SALIR -------------> ","EROR, OPCION INVALIDA. REINTENTOS", &option, 3)))
         {
-            *pResultado = opcion;
+            *pResult = option;
             output = 0;
         }
     }
     return output;
 }
 
-int menu_Campos(int *pResultado)
+int menu_Variables(int *pResult)
 {
     int output = -1;
-    int opcion;
-    if (pResultado != NULL)
+    int option;
+    if (pResult != NULL)
     {
         if (!(utn_getIntConMinMax(
           "\n######################################################\n"
@@ -42,9 +40,9 @@ int menu_Campos(int *pResultado)
             "(6).  float*\n"
             "(7).  long\n"
             "(8).  long* "
-            "      OPCION -------------> ","Error, reintentos", &opcion, 1, 9, 3)))
+            "      OPCION -------------> ","Error, reintentos", &option, 1, 9, 3)))
         {
-            *pResultado = opcion;
+            *pResult = option;
             output = 0;
         }
     }

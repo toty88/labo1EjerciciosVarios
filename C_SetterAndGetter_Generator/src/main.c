@@ -20,7 +20,7 @@ int main(void) {
 
     do
     {
-        if (!(menu_Principal(&menuOption)))
+        if (!(menu_Main(&menuOption)))
         {
             switch (menuOption)
             {
@@ -46,10 +46,18 @@ int main(void) {
             case 3:
                 if(flagCase1 == 1 && flagCase2 == 1)
                 {
-                    if( !(ghost_printConstructors(pArrayGhost, SIZE_ARRAY_GHOST, bufferStructureName))
+                    if( !(ghost_printStructureBody(pArrayGhost, SIZE_ARRAY_GHOST, bufferStructureName))
+                            &&!(ghost_printConstructorsPrototypes(pArrayGhost, SIZE_ARRAY_GHOST, bufferStructureName))
+                            && !(ghost_printSettersPrototypes(pArrayGhost, SIZE_ARRAY_GHOST, bufferStructureName))
+                            && !(ghost_printGettersPrototypes(pArrayGhost, SIZE_ARRAY_GHOST, bufferStructureName))
+                            )
+                    {
+                        printf("\n\n<<<<<<<< FUNCIONES COPIADAS AL .h >>>>>>>>\n");
+                    }
+                    if(!(ghost_printConstructors(pArrayGhost, SIZE_ARRAY_GHOST, bufferStructureName))
                             &&!(ghost_printSettersAndGetters(pArrayGhost, SIZE_ARRAY_GHOST, bufferStructureName)))
                     {
-                        printf("\n<<<<<<<< FUNCIONES IMPRESAS CON EXITO >>>>>>>>\n");
+                        printf("\n<<<<<<<< FUNCIONES COPIADAS AL .c >>>>>>>>\n");
                     }
                 }
                 else

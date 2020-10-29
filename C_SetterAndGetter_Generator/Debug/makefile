@@ -23,19 +23,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: Setters&Getters_Generator
+all: c_generator
 
 # Tool invocations
-Setters&Getters_Generator: $(OBJS) $(USER_OBJS)
+c_generator: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc  -o "Setters&Getters_Generator" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc  -o "c_generator" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) Setters&Getters_Generator
+	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) c_generator
 	-@echo ' '
 
 .PHONY: all clean dependents
