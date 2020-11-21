@@ -28,7 +28,7 @@ int ghost_generateSetterChar(char*, char*, char*);
 int ghost_generateSetterWithoutChar(char*, char*, char*);
 int ghost_generateGetterChar(char*, char*, char*);
 int ghost_generateGetterWithoutChar(char*, char*, char*);
-int ghost_generateIsValid(char*, char*);
+int ghost_generateIsValid(char*, char*, char*);
 int ghost_generateConstructorNew(char*);
 int ghost_generateConstructorNewParam(Ghost*, int, char*);
 
@@ -45,6 +45,7 @@ int ghost_printConstructors(Ghost*, int, char*);
 int ghost_printConstructorsPrototypes(Ghost*, int, char*);
 int ghost_printSettersPrototypes(Ghost*, int, char*);
 int ghost_printGettersPrototypes(Ghost*, int, char*);
+int ghost_printIsValidPrototypes(Ghost*, int, char*);
 int ghost_printStructureBody(Ghost*, int, char*);
 
 

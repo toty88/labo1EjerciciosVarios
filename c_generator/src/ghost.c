@@ -40,6 +40,7 @@ int ghost_generateStructure(Ghost *pArrayGhost, int len, char* varStructureName)
     }
     return output;
 }
+
 int ghost_generateConstructorsPrototypes(Ghost *pArrayGhost, int len, char* varStructureName)
 {
     int output = -1;
@@ -64,10 +65,29 @@ int ghost_generateConstructorsPrototypes(Ghost *pArrayGhost, int len, char* varS
                 {
                     printf(", ");
                 }
+            }
+        }
+        printf(");");
+        printf("\n%s* %s_newParamTXT(",varStructureNameAux, varStructureName);
+        for(int x = 0; x < len; x++)
+        {
+            if(pArrayGhost[x].isEmpty == FALSE)
+            {
+                printf("char* %s", pArrayGhost[x].varName);
+                if(pArrayGhost[x+1].isEmpty == TRUE)
+                {
+                    break;
+                }
+                else
+                {
+                    printf(", ");
+                }
                 output = 0;
             }
         }
         printf(");");
+
+        printf("\nint %s_delete(%s* this);", varStructureName, varStructureNameAux);
     }
 
     return output;
@@ -94,6 +114,15 @@ int ghost_generateSettersPrototypes(Ghost *pArrayGhost, int len, char* varStruct
                                                               varStructureNameAux,
                                                               pArrayGhost[x].varType,
                                                               pArrayGhost[x].varName);
+               if(strncmp(pArrayGhost[x].varType, "char*", (int)sizeof("char*")) != 0)
+               {
+                   strncpy(varNameVariableAux, pArrayGhost[x].varName, SIZE_VAR_NAME);
+                   varNameVariableAux[0] = toupper(varNameVariableAux[0]);
+                   printf("\nint %s_set%sTXT(%s* this, char* %s);", varStructureName,
+                                                                  varNameVariableAux,
+                                                                  varStructureNameAux,
+                                                                  pArrayGhost[x].varName);
+               }
                output = 0;
            }
         }
@@ -147,11 +176,24 @@ int ghost_generateSetterChar(char* varType, char* varName, char* varStructureNam
                                                        varStructureNameAux,
                                                        varType,
                                                        varName);
-        printf("\tint output = -1;\n\tif(this != NULL && IsValid%s(%s))\n",varNameVariableAux, varName);
+        printf("\tint output = -1;\n\tif(this != NULL && %s_isValid%s(%s))\n",varStructureName, varNameVariableAux, varName);
         printf("\t{\n");
         printf("\t\tstrncpy(this->%s,%s,(int)sizeof(this->%s));\n\t\toutput = 0;\n", varName, varName, varName);
         printf("\t}\n\treturn output;\n");
         printf("}\n\n");
+
+        if(strncmp(varType, "char*", 10) != 0)
+        {
+            printf("\nint %s_set%sTXT(%s* this, char* %s)\n{\n", varStructureName,
+                                                           varNameVariableAux,
+                                                           varStructureNameAux,
+                                                           varName);
+            printf("\tint output = -1;\n\tif(this != NULL && %s_isValid%s(%s))\n",varStructureName, varNameVariableAux, varName);
+            printf("\t{\n");
+            printf("\t\tstrncpy(this->%s,%s,(int)sizeof(this->%s));\n\t\toutput = 0;\n", varName, varName, varName);
+            printf("\t}\n\treturn output;\n");
+            printf("}\n\n");
+        }
         output = 0;
     }
     return output;
@@ -175,11 +217,47 @@ int ghost_generateSetterWithoutChar(char* varType, char* varName, char* varStruc
                                                        varStructureNameAux,
                                                        varType,
                                                        varName);
-        printf("\tint output = -1;\n\tif(this != NULL  && IsValid%s(%s))\n",varNameVariableAux, varName);
+        printf("\tint output = -1;\n\tif(this != NULL  && %s_isValid%s(%s))\n",varStructureName
+                                                                              ,varNameVariableAux
+                                                                              ,varName);
         printf("\t{\n");
         printf("\t\tthis->%s = %s;\n\t\toutput = 0;\n", varName, varName);
         printf("\t}\n\t return output;\n");
         printf("}\n\n");
+
+        if(strncmp(varType, "int",10)==0)
+        {
+            printf("\nint %s_set%sTXT(%s* this, char* %s)\n{\n", varStructureName,
+                                                           varNameVariableAux,
+                                                           varStructureNameAux,
+                                                           varName);
+            printf("\tint output = -1;\n\tint buffer%s;\n\tif(this != NULL  && %s_isValid%sTXT(%s))\n",varNameVariableAux
+                                                                                                      ,varStructureName
+                                                                                                      ,varNameVariableAux
+                                                                                                      ,varName);
+            printf("\t{\n");
+            printf("\t\tbuffer%s = atoi(buffer%s);\n", varNameVariableAux, varNameVariableAux);
+            printf("\t\tthis->%s = buffer%s;\n\t\toutput = 0;\n", varName, varNameVariableAux);
+            printf("\t}\n\t return output;\n");
+            printf("}\n\n");
+        }
+        else if(strncmp(varType, "float",10)==0)
+        {
+            printf("\nint %s_set%sTXT(%s* this, char* %s)\n{\n", varStructureName,
+                                                           varNameVariableAux,
+                                                           varStructureNameAux,
+                                                           varName);
+            printf("\tint output = -1;\n\tfloat buffer%s;\n\tif(this != NULL  && %s_isValid%sTXT(%s))\n",varNameVariableAux
+                                                                                                        ,varStructureName
+                                                                                                        ,varNameVariableAux
+                                                                                                        ,varName);
+            printf("\t{\n");
+            printf("\t\tbuffer%s = atof(buffer%s);\n", varNameVariableAux, varNameVariableAux);
+            printf("\t\tthis->%s = buffer%s;\n\t\toutput = 0;\n", varName, varNameVariableAux);
+            printf("\t}\n\t return output;\n");
+            printf("}\n\n");
+        }
+
         output = 0;
     }
     return output;
@@ -235,7 +313,7 @@ int ghost_generateGetterWithoutChar(char* varType, char* varName, char* varStruc
     return output;
 }
 
-int ghost_generateIsValid(char* varType, char* varName)
+int ghost_generateIsValid(char* varType, char* varName, char* varStructureName)
 {
     int output = -1;
     char varNameVariableAux[SIZE_VAR_NAME];
@@ -244,8 +322,37 @@ int ghost_generateIsValid(char* varType, char* varName)
     {
         strncpy(varNameVariableAux, varName, SIZE_VAR_NAME);
         varNameVariableAux[0] = toupper(varNameVariableAux[0]);
-        printf("int isValid%s(%s %s)\n{\n\treturn 1;\n}\n",varNameVariableAux,varType,varName);
+        printf("int %s_isValid%s(%s %s)\n{\n\treturn 1;\n}\n",varStructureName, varNameVariableAux,varType,varName);
+        if(strncmp(varType, "char*", 10)!= 0)
+        {
+            printf("\nint %s_isValid%sTXT(char* %s)\n{\n\treturn 1;\n}\n",varStructureName, varNameVariableAux,varName);
+        }
         output = 0;
+    }
+    return output;
+}
+
+int ghost_generateIsValidPrototype(Ghost *pArrayGhost, int len, char* varStructureName)
+{
+    int output = -1;
+    char varNameVariableAux[SIZE_VAR_NAME];
+
+    if(pArrayGhost != NULL && varStructureName != NULL)
+    {
+        for(int x = 0; x < len; x++)
+        {
+            if(pArrayGhost[x].isEmpty == FALSE)
+            {
+                strncpy(varNameVariableAux, pArrayGhost[x].varName, SIZE_VAR_NAME);
+                varNameVariableAux[0] = toupper(varNameVariableAux[0]);
+                printf("\nint %s_isValid%s(%s %s);",varStructureName, varNameVariableAux,pArrayGhost[x].varType,pArrayGhost[x].varName);
+                if(strcmp(pArrayGhost[x].varType, "char*") != 0)
+                {
+                    printf("\nint %s_isValid%sTXT(char* %s);",varStructureName, varNameVariableAux,pArrayGhost[x].varName);
+                }
+                output = 0;
+            }
+        }
     }
     return output;
 }
@@ -297,7 +404,46 @@ int ghost_generateConstructorNewParam(Ghost *pArrayGhost, int len, char* varStru
                 }
             }
         }
-        printf(")\n\t\t{\n\t\t\treturn this;\n\t\t}\n\t}\n\treturn NULL\n}\n");
+        printf(")\n\t\t{\n\t\t\treturn this;\n\t\t}\n\t}\n\treturn NULL;\n}\n");
+
+        printf("\n%s* %s_newParamTXT(",varStructureNameAux, varStructureName);
+        for(int x = 0; x < len; x++)
+        {
+            if(pArrayGhost[x].isEmpty == FALSE)
+            {
+                printf("char* %s",pArrayGhost[x].varName);
+                if(pArrayGhost[x+1].isEmpty == TRUE)
+                {
+                    break;
+                }
+                else
+                {
+                    printf(", ");
+                }
+            }
+        }
+        printf(")\n{\n");
+        printf("\t%s* this = %s_new();\n",varStructureNameAux, varStructureName);
+        printf("\tif(this != NULL)\n\t{\n");
+        printf("\t\tif(");
+        for(int x = 0; x < len-1; x++)
+        {
+            if(pArrayGhost[x].isEmpty == FALSE)
+            {
+                strncpy(varNameVariableAux, pArrayGhost[x].varName, SIZE_VAR_NAME);
+                varNameVariableAux[0] = toupper(varNameVariableAux[0]);
+                printf("!(%s_set%sTXT(this, %s))",varStructureName,varNameVariableAux,pArrayGhost[x].varName);
+                if(pArrayGhost[x+1].isEmpty == TRUE)
+                {
+                    break;
+                }
+                else
+                {
+                    printf("\n\t\t\t&& ");
+                }
+            }
+        }
+        printf(")\n\t\t{\n\t\t\treturn this;\n\t\t}\n\t}\n\treturn NULL;\n}\n");
         output = 0;
 
     }
@@ -315,11 +461,22 @@ int ghost_generateConstructorNew(char* varStructureName)
         printf("\n\n%s* %s_new(void)\n{\n"
                 "\treturn (%s*)malloc(sizeof(%s));\n"
                 "}\n", varStructureNameAux,varStructureName,varStructureNameAux,varStructureNameAux);
+
+        printf("\nint %s_delete(%s* this)\n", varStructureName, varStructureNameAux);
+        printf("{\n\tint output = -1;");
+        printf("\n\tif(this != NULL)\n\t{");
+        printf("\n\t\tfree(this);");
+        printf("\n\t\toutput = 0;");
+        printf("\n\t}\n\treturn output;");
+        printf("\n}\n");
         output = 0;
 
     }
     return output;
 }
+
+
+
 
 int ghost_copyFields(Ghost *pArrayGhost, int index, char* varType, char* varName)
 {
@@ -427,14 +584,15 @@ int ghost_printSettersAndGetters(Ghost *pArrayGhost, int len, char* varStructure
             {
                 if(((strncmp(pArrayGhost[x].varType, "char*", 50)==0 || strncmp(pArrayGhost[x].varType, "char", SIZE_VAR_NAME)==0)
                    && !(ghost_generateGetterChar(pArrayGhost[x].varType, pArrayGhost[x].varName,varStructureName))
-                   && !(ghost_generateSetterChar(pArrayGhost[x].varType, pArrayGhost[x].varName,varStructureName)))
+                   && !(ghost_generateSetterChar(pArrayGhost[x].varType, pArrayGhost[x].varName,varStructureName))
+                   && !(ghost_generateIsValid(pArrayGhost[x].varType, pArrayGhost[x].varName, varStructureName)))
                    ||
                    (!(ghost_generateGetterWithoutChar(pArrayGhost[x].varType, pArrayGhost[x].varName,varStructureName))
-                   && !(ghost_generateSetterWithoutChar(pArrayGhost[x].varType, pArrayGhost[x].varName,varStructureName))))
-                    {
-                        output = 0;
-                    }
-                ghost_generateIsValid(pArrayGhost[x].varType, pArrayGhost[x].varName);
+                   && !(ghost_generateSetterWithoutChar(pArrayGhost[x].varType, pArrayGhost[x].varName,varStructureName))
+                   && !(ghost_generateIsValid(pArrayGhost[x].varType, pArrayGhost[x].varName, varStructureName))))
+                {
+                    output = 0;
+                }
             }
         }
     }
@@ -494,9 +652,22 @@ int ghost_printGettersPrototypes(Ghost *pArrayGhost, int len, char* varStructure
     return output;
 }
 
+int ghost_printIsValidPrototypes(Ghost *pArrayGhost, int len, char* varStructureName)
+{
+    int output = -1;
+    if(pArrayGhost != NULL && len > 0 && varStructureName != NULL)
+    {
+        if(!(ghost_generateIsValidPrototype(pArrayGhost, len, varStructureName)))
+        {
+            output = 0;
+        }
+    }
+    return output;
+}
+
 int ghost_printStructureBody(Ghost *pArrayGhost, int len, char* varStructureName)
 {
-    int output = 0;
+    int output = -1;
     if(pArrayGhost != NULL && len > 0 && varStructureName != NULL)
     {
         if(!(ghost_generateStructure(pArrayGhost, len, varStructureName)))

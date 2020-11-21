@@ -47,12 +47,13 @@ int main(void) {
                 if(flagCase1 == 1 && flagCase2 == 1)
                 {
                     if( !(ghost_printStructureBody(pArrayGhost, SIZE_ARRAY_GHOST, bufferStructureName))
-                            &&!(ghost_printConstructorsPrototypes(pArrayGhost, SIZE_ARRAY_GHOST, bufferStructureName))
+                            && !(ghost_printConstructorsPrototypes(pArrayGhost, SIZE_ARRAY_GHOST, bufferStructureName))
                             && !(ghost_printSettersPrototypes(pArrayGhost, SIZE_ARRAY_GHOST, bufferStructureName))
                             && !(ghost_printGettersPrototypes(pArrayGhost, SIZE_ARRAY_GHOST, bufferStructureName))
+                            && !(ghost_printIsValidPrototypes(pArrayGhost, SIZE_ARRAY_GHOST, bufferStructureName))
                             )
                     {
-                        printf("\n\n<<<<<<<< FUNCIONES COPIADAS AL .h >>>>>>>>\n");
+                        printf("\n\n<<<<<<<< PROTOTIPOS COPIADAS AL .h >>>>>>>>\n");
                     }
                     if(!(ghost_printConstructors(pArrayGhost, SIZE_ARRAY_GHOST, bufferStructureName))
                             &&!(ghost_printSettersAndGetters(pArrayGhost, SIZE_ARRAY_GHOST, bufferStructureName)))
@@ -69,7 +70,7 @@ int main(void) {
                 printf("Hasta luego\n");
                 break;
             default:
-                printf("Error, menuOption invalida\n");
+                printf("Error, opcion invalida\n");
             }
         }
     } while (menuOption != 4);
